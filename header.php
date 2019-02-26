@@ -8,27 +8,23 @@ $activeUserType=-1;
 
 if(isset($_SESSION['activeUser']))
 {
+	$activeUserId=$_SESSION['activeUserId'];
 	$activeUser=$_SESSION['activeUser'];
 	$activeUserName=$_SESSION['activeUserName'];
 	$activeUserType=$_SESSION['activeUserType'];
-	$activeUserId=$_SESSION['activeUserId'];
 
+	echo "<div style='float: right;'>";
+	echo "<h3>Prijavljeni ste kao: ".$_SESSION['activeUser']."</h3>";
+	echo "<h3>Prava: ".$_SESSION['tipNaziv']."</h3>";
+	echo "<h3>Preostali odgovori: ".$_SESSION['preostaliOdgovori']."</h3>";
+	echo"</div>"; 
+}
+else
+{
+	echo "<h3 style='float: right;'>Niste prijavljeni!</h3>";
 }
 
 
-
-if(isset($_SESSION['activeUser']))
-	{
-
-		echo "<div style='float: right;'>";
-		echo "<h3>Prijavljeni ste kao: ".$_SESSION['activeUser']."</h3>";
-		echo "<h3>Prava: ".$_SESSION['tipNaziv']."</h3>";
-		echo"</div>"; 
-	}
-	else
-	{
-		echo "<h3 style='float: right;'>Niste prijavljeni!</h3>";
-	}
 
 ?>
 <a href="index.php"> Home </a>
@@ -48,6 +44,11 @@ if(isset($_SESSION['activeUser']))
 } ?>
 
 <?php if($activeUserType==2)
+{ ?>
+	<a href="mojaTvrtka.php"> Moja tvrtka </a>
+<?php } ?>
+
+<?php if($activeUserType==1)
 { ?>
 	<a href="mojaTvrtka.php"> Moja tvrtka </a>
 <?php } ?>

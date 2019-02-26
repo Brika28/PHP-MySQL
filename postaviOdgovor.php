@@ -8,28 +8,51 @@ $tekst=$_POST["tekstOdgovora"];
 $datum=date('Y-m-d H:i:s');
 
 $connect=connectDB();
-$query1="SELECT pitanje_id,odgovor.zaposlenik_id AS odgZap
-FROM odgovor
-LEFT JOIN zaposlenik
-ON odgovor.pitanje_id=zaposlenik.korisnik_id
-WHERE odgovor.zaposlenik_id='$activeUserId' AND odgovor.pitanje_id='$pid'";
+$query1="SELECT pitanje_id,odgovor.zaposlenik_id
+			FROM odgovor
+			LEFT JOIN zaposlenik
+			ON odgovor.pitanje_id=zaposlenik.korisnik_id
+			WHERE odgovor.zaposlenik_id='$zaposlenik' AND odgovor.pitanje_id='$pid'";
 
 $result1=queryDB($connect,$query1);
 	
 if(mysqli_fetch_array($result1))
-{
-    header("Location:mojaTvrtka.php?id=$id"); 
-    exit();
-}
+	{
+	    header("Location:mojaTvrtka.php?id=$id"); 
+	    exit();
+	}
 else 
-{
-	$query="INSERT INTO odgovor
-	(pitanje_id,zaposlenik_id,tekst,datum_vrijeme_odgovora) VALUES ('$pid','$zaposlenik','$tekst','$datum')";
+	{
+		$insertQuery="INSERT INTO odgovor
+						(pitanje_id,zaposlenik_id,tekst,datum_vrijeme_odgovora) 
+						VALUES ('$pid','$zaposlenik','$tekst','$datum')";
 
-	$result=queryDB($connect,$query);
+		$result=queryDB($connect,$insertQuery);
 
-header("Location: detaljiPitanja.php?id=$pid");
-}
+		$updateQuery="UPDATE tvrtka JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id
+						SET preostaliOdgovori=preostaliOdgovori-1
+						WHERE zaposlenik.korisnik_id='$zaposlenik'";
+
+		$result=queryDB($connect,$updateQuery);
+
+		$sessionQuery= "SELECT preostaliOdgovori 
+				FROM tvrtka
+				INNER JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id
+				WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
+
+		$result=queryDB($connect,$sessionQuery);
+
+		if($result)
+		{
+			if(mysqli_num_rows($result) != 0)
+			{
+				list($preostaliOdgovori) = mysqli_fetch_array($result);
+				$_SESSION['preostaliOdgovori']=$preostaliOdgovori;
+			}
+		}
+
+		header("Location: detaljiPitanja.php?id=$pid");
+	}
 
 
 disconnectDB($connect);
