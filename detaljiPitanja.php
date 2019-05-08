@@ -57,10 +57,16 @@ disconnectDB($connect);
 <body>
 	<div>
 		<h2>Odgovori na pitanje </h2>
-		<form action="postaviOdgovor.php" method="POST">
+			<?php if($_SESSION['preostaliOdgovori'] == 0)
+			{?>
+			<label>Nemate vise preostalih odgovora!</label>
+			<?php } 
+			 else { ?>
+			 <form action="postaviOdgovor.php" method="POST">
 			<label> ODGOVOR </label>
 			<input type="textarea" name="tekstOdgovora"> <br>
 			<input type="submit" name="postaviOdgovor" value="Odgovori!">
+			<?php } ?>
 			<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		</form>
 	</div>

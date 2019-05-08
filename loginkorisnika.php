@@ -32,6 +32,23 @@ if(isset($_POST['userName']))
 		}
 		if($_SESSION['activeUserType']==2)
 		{
+			$checkEmployee="SELECT zaposlenik.korisnik_id, korisnik.korisnik_id, korisnik.ime
+					FROM zaposlenik
+					INNER JOIN korisnik ON zaposlenik.korisnik_id = korisnik.korisnik_id
+					WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
+
+			$resultEmployee=queryDb($connect,$checkEmployee);
+
+			if($resultEmployee)
+			{
+			if(mysqli_num_rows($resultEmployee) !=0)
+				{
+					list($employed) = mysqli_fetch_array($resultEmployee);
+					$_SESSION['employed']=$employed;
+				}
+			}
+
+
 			$query1= "SELECT preostaliOdgovori 
 				FROM tvrtka
 				INNER JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id

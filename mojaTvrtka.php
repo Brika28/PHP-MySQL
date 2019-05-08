@@ -9,6 +9,24 @@ if (isset($_GET['activeUserId']))
 	$_SESSION['activeUserId'] = $_GET['activeUserId']; 
 }
 
+$connect=connectDB();
+$checkEmployee="SELECT zaposlenik.korisnik_id, korisnik.korisnik_id, korisnik.ime
+					FROM zaposlenik
+					INNER JOIN korisnik ON zaposlenik.korisnik_id = korisnik.korisnik_id
+					WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
+
+$resultEmployee=queryDb($connect,$checkEmployee);
+
+if($resultEmployee)
+{
+	if(mysqli_num_rows($resultEmployee) !=0)
+	{
+		list($employed) = mysqli_fetch_array($resultEmployee);
+		$_SESSION['employed']=$employed;
+	}
+}
+
+
 if($_SESSION['activeUserType']==2)
 {
 	$connect = connectDB();

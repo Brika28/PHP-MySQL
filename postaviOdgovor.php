@@ -8,6 +8,7 @@ $tekst=$_POST["tekstOdgovora"];
 $datum=date('Y-m-d H:i:s');
 
 $connect=connectDB();
+
 $query1="SELECT pitanje_id,odgovor.zaposlenik_id
 			FROM odgovor
 			LEFT JOIN zaposlenik
@@ -29,12 +30,28 @@ else
 
 		$result=queryDB($connect,$insertQuery);
 
-		$updateQuery="UPDATE tvrtka JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id
-						SET preostaliOdgovori=preostaliOdgovori-1
-						WHERE zaposlenik.korisnik_id='$zaposlenik'";
+		$checkQuery="SELECT tvrtka.preostaliOdgovori
+						FROM tvrtka
+						INNER JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id
+						WHERE zaposlenik.tvrtka_id='$zaposlenik'";
 
-		$result=queryDB($connect,$updateQuery);
+		$checkResult=queryDB($connect,$checkQuery);
 
+		if($checkResult > 0)
+		{
+			$updateQuery="UPDATE tvrtka 
+							JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id
+							SET preostaliOdgovori=preostaliOdgovori-1
+							WHERE zaposlenik.korisnik_id='$zaposlenik'";
+
+			$result=queryDB($connect,$updateQuery);
+		}
+		else
+		{
+			header("Location:detaljiPitanja.php?id=$pid");
+			exit();
+		}
+	}	
 		$sessionQuery= "SELECT preostaliOdgovori 
 				FROM tvrtka
 				INNER JOIN zaposlenik ON tvrtka.tvrtka_id = zaposlenik.tvrtka_id
@@ -52,7 +69,7 @@ else
 		}
 
 		header("Location: detaljiPitanja.php?id=$pid");
-	}
+	
 
 
 disconnectDB($connect);
