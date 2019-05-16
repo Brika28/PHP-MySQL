@@ -24,10 +24,8 @@ $query = "INSERT INTO pitanje
          VALUES('$id','$naslov','$datum','$pitanje','$slika','$video')";
 
 $result= queryDB($connect,$query);
-connectDB($connect);
 
 disconnectDB($connect);
-
 header("Location: detalji.php?id=$id");
 
 

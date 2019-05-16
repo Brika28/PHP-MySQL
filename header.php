@@ -16,7 +16,7 @@ if(isset($_SESSION['activeUser']))
 	echo "<div style='float: right;'>";
 	echo "<h3>Prijavljeni ste kao: ".$_SESSION['activeUser']."</h3>";
 	echo "<h3>Prava: ".$_SESSION['tipNaziv']."</h3>";
-	if(isset($_SESSION ['employed']))
+	if(isset($_SESSION ['employed']) || $activeUserType==1)
 	{
 		echo "<h3>Preostali odgovori: ".$_SESSION['preostaliOdgovori']."</h3>";
 	}
@@ -26,7 +26,6 @@ else
 {
 	echo "<h3 style='float: right;'>Niste prijavljeni!</h3>";
 }
-
 
 
 ?>

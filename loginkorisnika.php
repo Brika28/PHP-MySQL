@@ -67,7 +67,7 @@ if(isset($_POST['userName']))
 		}
 		else if($_SESSION['activeUserType']==1)
 		{
-			$query2= "SELECT preostaliOdgovori 
+			$query2= "SELECT preostaliOdgovori
 				FROM tvrtka
 				WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];
 
@@ -81,8 +81,23 @@ if(isset($_POST['userName']))
 								$_SESSION['preostaliOdgovori']=$preostaliOdgovori;
 							}
 					}
+			$query3= "SELECT tvrtka_id
+				FROM tvrtka 
+				WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];
+
+			$result3=queryDB($connect,$query3);
+
+				if($result3)
+					{
+						if(mysqli_num_rows($result3) != 0)
+							{
+								list($tvrtkaId) = mysqli_fetch_array($result3);
+								$_SESSION['tvrtkaId']=$tvrtkaId;
+							}
+					}
+
+
 		}
-		
 		disconnectDB($connect);
 	}
 	header("Location: index.php");

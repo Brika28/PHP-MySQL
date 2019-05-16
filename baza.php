@@ -1,8 +1,8 @@
 <?php
 define ("HOST","localhost");
-define("BAZA", "iwa_2018_zb_projekt");
-define("BAZA_KORISNIK", "iwa_2018");
-define("BAZA_SIFRA", "foi2018");
+define ("BAZA", "iwa_2018_zb_projekt");
+define ("BAZA_KORISNIK", "iwa_2018");
+define ("BAZA_SIFRA", "foi2018");
 
 function connectDB()
 {
