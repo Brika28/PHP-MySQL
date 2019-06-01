@@ -4,13 +4,14 @@ include("header.php");
 
 $pid=$_GET['id'];
 
+
+
 $connect=connectDB();
 $query ="SELECT pitanje.tvrtka_id,naslov,datum_vrijeme_pitanja,pitanje.tekst,slika,video,pitanje.pitanje_id, tvrtka.tvrtka_id, odgovor.odgovor_id,preostaliOdgovori,odgovor.tekst AS odgTekst 
 		FROM pitanje 
         INNER JOIN tvrtka ON tvrtka.tvrtka_id = pitanje.tvrtka_id
         LEFT JOIN odgovor ON odgovor.pitanje_id = pitanje.pitanje_id
 		WHERE pitanje.pitanje_id = '$pid'";
-
 
 
 $result=queryDB($connect,$query);
@@ -34,15 +35,18 @@ if(mysqli_num_rows($result) >= 0)
 
 		while($row = mysqli_fetch_array($result))
 		{
+			$vrijeme = strtotime($row["datum_vrijeme_pitanja"]);
+			$mojeVrijeme = date("m/d/Y G:i", $vrijeme);
 			echo "<tr>";
 			echo "<td>".$row["naslov"]."</td>";
-			echo "<td>".$row["datum_vrijeme_pitanja"]."</td>";
+			echo "<td>".$mojeVrijeme."</td>";
 			echo "<td>".$row["tekst"]."</td>";
 			echo "<td>".$row["slika"]."</td>";
 			echo "<td>".$row["video"]."</td>";
 			echo "<td>".$row["odgTekst"]."</td>";
 			echo "</tr>";
 		}
+
 	echo "</tbody>";
 	echo "</table>";
 }

@@ -32,6 +32,7 @@ if(isset($_POST['userName']))
 		}
 		if($_SESSION['activeUserType']==2)
 		{
+			
 			$checkEmployee="SELECT zaposlenik.korisnik_id, korisnik.korisnik_id, korisnik.ime
 					FROM zaposlenik
 					INNER JOIN korisnik ON zaposlenik.korisnik_id = korisnik.korisnik_id
@@ -67,6 +68,20 @@ if(isset($_POST['userName']))
 		}
 		else if($_SESSION['activeUserType']==1)
 		{
+			$modEmployed="SELECT moderator_id
+							FROM tvrtka
+							WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];
+			$resultMod=queryDB($connect,$modEmployed);
+
+			if($result)
+			{
+				if(mysqli_num_rows($result) != 0)
+				{
+					list($modID) = mysqli_fetch_array($resultMod);
+					$_SESSION['modID'] = $modID;
+				}
+			}
+
 			$query2= "SELECT preostaliOdgovori
 				FROM tvrtka
 				WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];

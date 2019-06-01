@@ -196,85 +196,40 @@ else if($_SESSION['activeUserType']==1)
 	}
 		echo "<h2> Statistika po zaposleniku </h2>";
 
-		$getTime ="SELECT datum_vrijeme_pitanja 
-							FROM pitanje 
-							LEFT JOIN tvrtka ON tvrtka.tvrtka_id = pitanje.tvrtka_id 
-							WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];
-			$resultTime = queryDB($connect,$getTime);
-		
-
-?>
-			
-<form action="mojaTvrtka.php" method="POST">
-
-
-	<select name="dropdown">
-<?php	
-	if($resultTime)
-		{
-
-			while($row = mysqli_fetch_array($resultTime))
-    		{  ?>    
-				<option value="<?php echo $row['datum_vrijeme_pitanja'];?>">
-					<?php echo $row['datum_vrijeme_pitanja']; ?>
-				</option>
-			<?php } ?>
-		}
-?>
-	</select>
+	?>
+	<form action="mojaTvrtka.php" method="POST">
+		<?php echo "OD"; ?>
+		<input input type="text" name="vrijeme" placeholder="YYYY-MM-DD" required 
+			pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" >
+		<?php echo "DO"; ?>
+		<input input type="text" name="vrijeme1" placeholder="YYYY-MM-DD" required 
+			pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))">
+		<input type='submit' name='postavi' value="Zatraži rezultatz!">
+	</form>
 <?php
-			echo "DO";
-
-			$getTime1 ="SELECT datum_vrijeme_pitanja 
-							FROM pitanje 
-							LEFT JOIN tvrtka ON tvrtka.tvrtka_id = pitanje.tvrtka_id 
-							WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];
-			$resultTime1 = queryDB($connect,$getTime1);
-?>
-		
-<select name="dropdown1">
-<?php	
-	if($resultTime1)
-		{
-
-			while($row = mysqli_fetch_array($resultTime1))
-    		{  ?>    
-				<option value="<?php echo $row['datum_vrijeme_pitanja'];?>">
-					<?php echo $row['datum_vrijeme_pitanja']; ?>
-				</option>
-			<?php } ?>
-		}
-?>
-</select>
- <?php
-    if(isset($_POST['dropdown']))
+	if(isset($_POST['vrijeme']))
     {
-    	$selectedDatum = $_POST['dropdown'];
+    	$postavljeno = $_POST['vrijeme'];
     }
-        if(isset($_POST['dropdown1']))
+    if(isset($_POST['vrijeme1']))
     {
-    	$selectedDatum1 = $_POST['dropdown1'];
+    	$postavljeno1 = $_POST['vrijeme1'];	
     }
-    echo
-      "<form action='' method='post'>
-        <input type='submit' name='zatraziRezultat' value='Zatrazi rezultat!' />
-       </form>";
 
-		if(isset($_POST['zatraziRezultat']))
+    if(isset($_POST['postavi']))
 		{
+			$connect=connectDB();
 			$statsQuery ="SELECT ime, prezime, COUNT(*) AS broj_odgovora FROM korisnik, zaposlenik, odgovor
 								WHERE korisnik.korisnik_id = zaposlenik.korisnik_id AND zaposlenik.zaposlenik_id = odgovor.zaposlenik_id
 								AND zaposlenik.tvrtka_id ='{$_SESSION['tvrtkaId']}' AND odgovor.datum_vrijeme_odgovora BETWEEN 
-								'{$selectedDatum}' AND 
-								'{$selectedDatum1}'
-								 GROUP BY korisnicko_ime";
+								'{$postavljeno}' AND '{$postavljeno1}' GROUP BY korisnicko_ime";
 								
 				$statsResult = queryDB($connect,$statsQuery);
 
 				if(mysqli_num_rows($statsResult) > 0)
 				{
 
-			echo "<h2> Popis odgovora </h2>";
+			echo "<h2> Broj odgovora </h2>";
 			echo "<table border ='1'>";
 			echo "<thead>";
 			echo "<tr>";
@@ -300,14 +255,13 @@ else if($_SESSION['activeUserType']==1)
 					{
 						echo"Nema rezultata za traženo razdoblje!";
 					}
-			}
 		}
-	}
+
 }
-
-										
+		
 disconnectDB($connect);
-
+	
 ?>
+
 </body>
 </html>

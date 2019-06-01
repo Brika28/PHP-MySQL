@@ -5,7 +5,6 @@ $path=$_SERVER['REQUEST_URI'];
 $activeUser=0;
 $activeUserId=0;
 $activeUserType=-1;
-
 if(isset($_SESSION['activeUser']))
 {
 	$activeUserId=$_SESSION['activeUserId'];
@@ -16,7 +15,7 @@ if(isset($_SESSION['activeUser']))
 	echo "<div style='float: right;'>";
 	echo "<h3>Prijavljeni ste kao: ".$_SESSION['activeUser']."</h3>";
 	echo "<h3>Prava: ".$_SESSION['tipNaziv']."</h3>";
-	if(isset($_SESSION ['employed']) || $activeUserType==1)
+	if(isset($_SESSION ['employed']) || isset($_SESSION['modID']))
 	{
 		echo "<h3>Preostali odgovori: ".$_SESSION['preostaliOdgovori']."</h3>";
 	}
@@ -34,16 +33,18 @@ else
 { ?>
 	<a href="loginkorisnika.php"> Prijava </a>
 <?php 
-}
- if($activeUserType!=-1) { ?>
-	<a href="odjava.php"> Odjava </a>
-<?php } ?>
+} ?>
 <a href="popistvrtki.php"> Tvrtke </a>
 <?php if($activeUserType==0)
 { ?>
-	<a href="dodajTvrtku.php"> Dodaj tvrtku </a>
+	<a href="unosPregledTvrtki.php"> Unos i pregled tvrtki </a>
+	<a href="unosPregledKorisnika.php"> Unos i pregled korisnika </a>
+
 <?php 
 } ?>
+
+<?php 
+if(isset($_SESSION ['employed']) || isset($_SESSION['modID'])){ ?>
 
 <?php if($activeUserType==2 && !empty($_SESSION['employed']))
 { ?>
@@ -54,4 +55,9 @@ else
 { ?>
 	<a href="mojaTvrtka.php"> Moja tvrtka </a>
 <?php } ?>
+<?php } ?>
+ <?php if($activeUserType!=-1) { ?>
+	<a href="odjava.php"> Odjava </a>
+<?php } ?>
+
 
