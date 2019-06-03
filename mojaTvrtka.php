@@ -31,6 +31,7 @@ if($resultEmployee)
 		list($employed) = mysqli_fetch_array($resultEmployee);
 		$_SESSION['employed']=$employed;
 	}
+
 }
 
 
@@ -46,7 +47,7 @@ if($_SESSION['activeUserType']==2)
 	$result=queryDB($connect,$query);
 
 
-	if(mysqli_num_rows($result) >= 0)
+	if(mysqli_num_rows($result) > 0)
 		{
 
 			echo "<h2> Popis pitanja</h2>";
@@ -67,7 +68,11 @@ if($_SESSION['activeUserType']==2)
 				echo "</tbody>";
 				echo "</table>";
 		}
-disconnectDB($connect);
+		elseif(mysqli_num_rows($result) == 0)
+		{
+			echo "Nema postavljenih pitanja!";
+		}
+
 }
 else if($_SESSION['activeUserType']==1)
 {
@@ -80,11 +85,11 @@ else if($_SESSION['activeUserType']==1)
 
 	$result=queryDB($connect,$query);
 
-
-	if(mysqli_num_rows($result) >= 0)
+	echo "<h2> Popis pitanja</h2>";
+	if(mysqli_num_rows($result) > 0)
 		{
 
-			echo "<h2> Popis pitanja</h2>";
+			
 			echo "<table border ='1'>";
 			echo "<thead>";
 			echo "<tr>";
@@ -102,6 +107,11 @@ else if($_SESSION['activeUserType']==1)
 				echo "</tbody>";
 				echo "</table>";
 		}
+		elseif(mysqli_num_rows($result) == 0)
+		{
+			echo "Nema postavljenih pitanja!";
+		}
+
 	$employeesList="SELECT korisnik.ime,korisnik.prezime,korisnik.korisnik_id
 						FROM zaposlenik
 						INNER JOIN korisnik ON korisnik.korisnik_id = zaposlenik.korisnik_id
@@ -109,9 +119,10 @@ else if($_SESSION['activeUserType']==1)
 						WHERE tvrtka.moderator_id = '$activeUserId'";
 	$employeesResult=queryDB($connect,$employeesList);
 
-	if(mysqli_num_rows($employeesResult) >= 0)
+	
+	echo "<h2> Popis zaposlenika</h2>";
+	if(mysqli_num_rows($employeesResult) > 0)
 		{
-			echo "<h2> Popis zaposlenika</h2>";
 			echo "<table border ='1'>";
 			echo "<thead>";
 			echo "<tr>";
@@ -128,11 +139,15 @@ else if($_SESSION['activeUserType']==1)
 					echo "</tbody>";
 					echo "</table>";
 		}
+		elseif(mysqli_num_rows($employeesResult) == 0)
+		{
+			echo "Nemate zaposlenih korisnika!";
+		}
 	$freeEmployees ="SELECT korisnik.ime,korisnik.prezime,korisnik.korisnik_id
 					FROM korisnik
 					LEFT OUTER JOIN zaposlenik ON zaposlenik.korisnik_id=korisnik.korisnik_id
 					LEFT OUTER JOIN tvrtka ON korisnik.korisnik_id = tvrtka.moderator_id
-					WHERE zaposlenik.korisnik_id IS NULL AND tvrtka.moderator_id IS NULL AND korisnik.korisnik_id != 1";
+					WHERE zaposlenik.korisnik_id IS NULL AND tvrtka.moderator_id IS NULL AND korisnik.korisnik_id != 1 AND korisnik.tip_id != 1";
 
 	$result=queryDB($connect,$freeEmployees);
 
