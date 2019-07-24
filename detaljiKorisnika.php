@@ -82,8 +82,43 @@ if(mysqli_num_rows($result) >= 0)
 		header("Location: detaljiKorisnika.php?kid=$idUser");
 
 	}
-disconnectDB($connect);
+ $userEdit = "SELECT korisnik.korisnicko_ime,korisnik.ime,korisnik.prezime,korisnik.email
+				FROM korisnik 
+				WHERE korisnik.korisnik_id ='$idUser'";
+$result=queryDB($connect,$userEdit);
+while($row=mysqli_fetch_array($result))
+{
+	$korisnickoIme=$row['korisnicko_ime'];
+	$ime=$row['ime'];
+	$prezime=$row['prezime'];
+	$email=$row['email'];
+}
+if(isset($_POST['submit1']))
+{
+	$korImeNovo=$_POST['korisnickoIme'];
+	$imeNovo=$_POST['ime'];
+	$prezimeNovo=$_POST['prezime'];
+	$emailNovo=$_POST['email'];
 
+	$newData = "UPDATE korisnik
+					SET korisnicko_ime = '$korImeNovo', ime='$imeNovo', prezime = '$prezimeNovo', email='$emailNovo'
+					WHERE korisnik.korisnik_id = '$idUser'";
+	$result=queryDB($connect,$newData);
+	header("location:detaljiKorisnika.php?kid=$idUser");
+}
+disconnectDB($connect);
 	 ?>
+<h2> Izmjena korisnickih podataka </h2>
+<form action="" method="POST">
+	<label> Korisnicko ime </label>
+	<input type="text" name="korisnickoIme" value="<?php echo $korisnickoIme; ?>"> <br>
+	<label> Ime </label>
+	<input type="text" name="ime" value="<?php echo $ime; ?>">  <br>
+	<label> Prezime</label>
+	<input type="tex" name="prezime" value="<?php echo $prezime; ?>">  <br>
+	<label> Email </label>
+	<input type="text" name="email" value="<?php echo $email; ?>"> 
+	<input type="submit" name="submit1" value="Ažuriraj">
+
 </body>
 </html>

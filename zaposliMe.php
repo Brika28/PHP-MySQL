@@ -1,3 +1,8 @@
+<?php  
+include ("baza.php");
+include ("header.php");
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,8 +12,7 @@
 
 
 <?php 
-include ("baza.php");
-include ("header.php");
+
 
 $uid=$_GET['uid'];
 $tvrtkaId=$_SESSION['tvrtkaId'];
@@ -54,6 +58,7 @@ if($_SESSION['BrojZaposelnika'] < $_SESSION['broj_zaposlenika'] )
 				VALUES ('$uid','$tvrtkaId')";
 		
 		$resultAdd = queryDB($connect,$addEmployee);
+		header("location:mojaTvrtka.php");
 	}
 	else
 	{

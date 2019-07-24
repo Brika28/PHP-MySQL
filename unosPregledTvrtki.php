@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
 <?php 
 include("baza.php");
 include("header.php");
@@ -67,18 +61,18 @@ if(isset($_POST['unesi']))
 			$opis=$_POST['opis'];
 			$brojZaposlenika=$_POST['brojZaposlenika'];
 
-			$unosTvrtke= "INSERT INTO tvrtka
+			$newFirm= "INSERT INTO tvrtka
 							(moderator_id,naziv,opis,broj_zaposlenika,preostaliOdgovori,zahtjev)
 		         			VALUES ('$modTvrtke','$naziv','$opis','$brojZaposlenika',0,0)";
 
-			$result= queryDB($connect,$unosTvrtke);
+			$result= queryDB($connect,$newFirm);
 			header("location:unosPregledTvrtki.php");
 		}
 
 
-$prikazTvrtki="SELECT tvrtka_id,naziv
+$showFirm="SELECT tvrtka_id,naziv
 				FROM tvrtka";
-$result=queryDB($connect,$prikazTvrtki);
+$result=queryDB($connect,$showFirm);
 
 if(mysqli_num_rows($result) >= 0)
 		{
@@ -101,6 +95,122 @@ if(mysqli_num_rows($result) >= 0)
 				echo "</tbody>";
 				echo "</table>";
 		}
+
+
+$answerRequest = "SELECT tvrtka.naziv,tvrtka.tvrtka_id,tvrtka.zahtjev
+					FROM tvrtka 
+					WHERE tvrtka.zahtjev = 1";
+$resultA=queryDB($connect,$answerRequest);
+
+	if(mysqli_num_rows($resultA) > 0)
+	{
+		echo "<h2> Popis tvrtki sa zahtjevom</h2>";
+		echo "<table border ='1'>";
+		echo "<thead>";
+		echo "<tr>";
+		echo "<th>Naziv </th>";
+		echo "</tr>";
+		echo "</thead>";
+		echo "<tbody>";
+
+			while(list($naziv,$tvrtka_id)=mysqli_fetch_row($resultA))
+				{
+					echo "<tr>";
+					echo "<td>".$naziv."</td>";
+					echo "<td>".$tvrtka_id."</td>";
+					echo "<td>"	?> 	<form action="" method="POST">
+										<input type="hidden" name="id" value="<?php echo "$tvrtka_id"; ?>">
+										<input type="submit" name="odobriZahtjev" value="Odobri zahtjev"> 
+										</form>
+								<?php "</td>";
+					echo "</tr>";
+				}
+		echo "</tbody>";
+		echo "</table>";
+	}
+	else
+	{
+		echo "<h2> Nema zahtijeva za povećanjem odgovora</h2>";	
+	}
+	if(isset($_POST['odobriZahtjev']))
+				{
+					$firmId = $_POST['id'];
+					$updateAnswers = "UPDATE tvrtka 
+									   SET zahtjev = '0', preostaliOdgovori=preostaliOdgovori + 10
+									   WHERE tvrtka.tvrtka_id='$firmId'";
+					$result=queryDB($connect,$updateAnswers);
+					header("location:unosPregledTvrtki.php");
+				}
+$questionAnswerNumber = "SELECT 
+    				tvrtka.naziv,
+    				COUNT(DISTINCT pitanje.pitanje_id) as brojPitanja,
+    				COUNT(odgovor.odgovor_id) as brojOdgovora
+					FROM tvrtka
+					LEFT JOIN pitanje ON pitanje.tvrtka_id = tvrtka.tvrtka_id
+					LEFT JOIN odgovor ON odgovor.pitanje_id = pitanje.pitanje_id
+					GROUP BY tvrtka.naziv
+					ORDER BY tvrtka.tvrtka_id";
+$questionAnswerResult = queryDB($connect,$questionAnswerNumber);
+
+if(mysqli_num_rows($questionAnswerResult) >= 0)
+{
+	echo "<h2> Statistika broja pitanja i odgovora </h2>";
+	echo "<table border = '1'>";
+	echo "<thead>";
+	echo "<tr>";
+	echo "<th> Tvrtka </th>";
+	echo "<th> Broj pitanja </th>";
+	echo "<th> Broj odgovora </th>";
+	echo "</thead>";
+	echo "<tbody>";
+
+		while(list($naziv,$brojPitanja,$brojOdgovora)= mysqli_fetch_row($questionAnswerResult))
+		{
+			echo "<tr>";
+			echo "<td>".$naziv."</td>";
+			echo "<td>".$brojPitanja."</td>";
+			echo "<td>".$brojOdgovora."</td>";
+			echo "</tr>";
+
+		}
+		echo "</tbody>";
+		echo "</table>";
+}
+
+$employeeStats ="SELECT naziv, ime, prezime, COUNT(*) AS broj_odgovora FROM tvrtka, korisnik, zaposlenik, odgovor
+				WHERE korisnik.korisnik_id = zaposlenik.korisnik_id AND zaposlenik.tvrtka_id = tvrtka.tvrtka_id
+				AND zaposlenik.zaposlenik_id = odgovor.zaposlenik_id
+				GROUP BY korisnik.korisnik_id order by broj_odgovora desc";
+$employeeStatsResult = queryDB($connect,$employeeStats);
+
+if(mysqli_num_rows($employeeStatsResult) >= 0)
+{
+	echo "<h2> Statistika broja odgovora po zaposleniku </h2>";
+	echo "<table border = '1'>";
+	echo "<thead>";
+	echo "<tr>";
+	echo "<th> Tvrtka </th>";
+	echo "<th> Ime </th>";
+	echo "<th> Prezime </th>";
+	echo "<th> Broj odgoora </th>";
+	echo "</thead>";
+	echo "<tbody>";
+
+	while(list($naziv,$ime,$prezime,$broj_odgovora)= mysqli_fetch_row($employeeStatsResult))
+		{
+			echo "<tr>";
+			echo "<td>".$naziv."</td>";
+			echo "<td>".$ime."</td>";
+			echo "<td>".$prezime."</td>";
+			echo "<td>".$broj_odgovora."</td>";
+			echo "</tr>";
+
+		}
+		echo "</tbody>";
+		echo "</table>";
+}
+
+
 disconnectDB($connect);
 ?>
 </body>

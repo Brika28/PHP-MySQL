@@ -18,7 +18,7 @@ $detaljiTvrtke="SELECT korisnik.korisnicko_ime,naziv,opis,broj_zaposlenika,tvrtk
 				FROM tvrtka
 				LEFT JOIN korisnik ON korisnik.korisnik_id = tvrtka.moderator_id
 				WHERE tvrtka.tvrtka_id ='$id'";
-$result=queryDb($connect,$detaljiTvrtke);
+$result=queryDB($connect,$detaljiTvrtke);
 
 if(mysqli_num_rows($result) >= 0)
 		{
@@ -31,7 +31,6 @@ if(mysqli_num_rows($result) >= 0)
 			echo "<th>Naziv </th>";
 			echo "<th>Opis </th>";
 			echo "<th>Broj zaposlenih </th>";
-			echo "<th>Azuriranje tvrtke </th>";
 			echo "</tr>";
 			echo "</thead>";
 			echo "<tbody>";
@@ -43,7 +42,7 @@ if(mysqli_num_rows($result) >= 0)
 					echo "<td>".$naziv."</td>";
 					echo "<td>".$opis."</td>";
 					echo "<td>".$broj."</td>";
-					echo "<td><a href='azuriranjeTvrtke.php?row['tvrtka_id']'> Azuriranje </a></td>";
+					echo "<td> <a href=azuriraj.php?id=$id> Izmjeni </a> </td>";
 					echo "</tr>";
 
 				}
