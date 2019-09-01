@@ -1,17 +1,16 @@
-<?php 
+<?php
 include("baza.php");
 include("header.php");
 
-$pid=$_GET['id'];
-
-
+$id=$_GET['id'];
+$pid=$_GET['pid'];
 
 $connect=connectDB();
 $query ="SELECT pitanje.tvrtka_id,naslov,datum_vrijeme_pitanja,pitanje.tekst,slika,video,pitanje.pitanje_id, tvrtka.tvrtka_id, odgovor.odgovor_id,preostaliOdgovori,odgovor.tekst AS odgTekst 
 		FROM pitanje 
         INNER JOIN tvrtka ON tvrtka.tvrtka_id = pitanje.tvrtka_id
         LEFT JOIN odgovor ON odgovor.pitanje_id = pitanje.pitanje_id
-		WHERE pitanje.pitanje_id = '$pid'";
+		WHERE pitanje.pitanje_id = '$pid' AND tvrtka.tvrtka_id= '$id'";
 
 
 $result=queryDB($connect,$query);
@@ -60,23 +59,6 @@ if(mysqli_num_rows($result) >= 0)
 </div>
 <?php } ?>
 
-<div class="container" id="loginForm">
-	<?php if($_SESSION['preostaliOdgovori'] == 0)
-			{?>
-				<label>Nemate vise preostalih odgovora!</label>
-	  <?php } 
-			 else 
-			 	{ ?>
-			 	 <form action="postaviOdgovor.php" method="POST">
-			 	<div class="form-group">
-					<label for="textarea"> ODGOVOR </label>
-						<textarea rows="4" cols="50" name="tekstOdgovora" required="required" class="form-control"></textarea>
-						<button type="submit" name="postaviOdgovor" class="btn btn-primary"> Postavi odgovor! </button>
-				</div>
-			<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
-		</form>
-		<?php } ?>
-	</div>
-<?php disconnectDB($connect); 
-	include("footer.php");
-	?>
+ <?php
+disconnectDB($connect);
+include("footer.php") ?>

@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
-
-
 <?php 
 include ("baza.php");
 include ("header.php");
@@ -22,49 +14,55 @@ $query="SELECT tip_id,korisnicko_ime,lozinka,ime,prezime,email,slika
 $result=queryDB($connect,$query);
 
 if(mysqli_num_rows($result) >= 0)
-		{
+		{ ?>
+			<h2 class="h2">Podcai o korisniku </h2>
+			<div class="container">
+			<table class="table table-bordered">
+			<thead class="thead-dark">
+			<tr>
+			<th scope="col">Tip korisnika</th>
+			<th scope="col">Korisnicko ime</th>
+			<th scope="col">Lozinka</th>
+			<th scope="col">Ime</th>
+			<th scope="col">Prezime</th>
+			<th scope="col">E-mail</th>
+			<th scope="col">Slika</th>
+			</tr>
+			</thead>
+			<tbody>
 
-			echo "<h2> Popis svih korisnika</h2>";
-			echo "<table border ='1'>";
-			echo "<thead>";
-			echo "<tr>";
-			echo "<th>Tip korisnika</th>";
-			echo "<th>Korisnicko ime</th>";
-			echo "<th>Lozinka</th>";
-			echo "<th>Ime</th>";
-			echo "<th>Prezime</th>";
-			echo "<th>E-mail</th>";
-			echo "<th>Slika</th>";
-			echo "</tr>";
-			echo "</thead>";
-			echo "<tbody>";
-
-				while(list($tip_id,$korisnicko_ime,$lozinka,$ime,$prezime,$email,$slika)=mysqli_fetch_row($result))
-				{
-					echo "<tr>";
-					echo "<td>".$tip_id."</td>";
-					echo "<td>".$korisnicko_ime."</td>";
-					echo "<td>".$lozinka."</td>";
-					echo "<td>".$ime."</td>";
-					echo "<td>".$prezime."</td>";
-					echo "<td>".$email."</td>";
-					echo "<td>".$slika."</td>";
-					echo "</tr>";
-				}
-			echo "</tbody>";
-			echo "</table>";
-		}
-
-
- ?>
- 	<h2> Promjena tipa korisniku <h2>
- 		<h4> Odaberite novi tip koji želite dodjeliti korisniku. </h4>
+		<?php while(list($tip_id,$korisnicko_ime,$lozinka,$ime,$prezime,$email,$slika)=mysqli_fetch_row($result))
+				{ ?>
+					<tr>
+					<td> <?php echo "$tip_id"; ?> </td>
+					<td> <?php echo "$korisnicko_ime"; ?> </td>
+					<td> <?php echo "$lozinka"; ?> </td>
+					<td> <?php echo "$ime"; ?> </td>
+					<td> <?php echo "$prezime"; ?> </td>
+					<td> <?php echo "$email"; ?> </td>
+					<td> <img src="<?php echo "$slika"; ?>" height="100" width="100"> </td>
+					</tr>
+		<?php } ?>
+			</tbody>
+			</table>
+		</div>
+	<?php } ?>
+ 	<div class="container" id="loginForm">
+ 		<h2 class="h2"> Promjena tipa korisnika <h2>
+ 			<h6> Odaberite novi tip koji želite dodjeliti korisniku. </h6>
  <form action=" " method="POST">
- 	<input type="radio" name="tip" value="0"> Tip 0 - Admin <br>
- 	<input type="radio" name="tip" value="1"> Tip 1 - Voditelj <br>
- 	<input type="radio" name="tip" value="2"> Tip 2 - Korisnik <br>
- 	<input type="submit" value="Promjeni tip!" name="promjeni">
+ 	<div class="form-group">
+ 	<input type="radio" name="tip" value="0"> Tip 0 - Admin
+ </div>
+ <div class="form-group">
+ 	<input type="radio" name="tip" value="1"> Tip 1 - Voditelj
+ </div>
+ <div class="form-group">
+ 	<input type="radio" name="tip" value="2"> Tip 2 - Korisnik
+ </div> 
+ 	<button type="submit"  name="promjeni" class="btn btn-primary"> Promijeni tip! </button>
  </form>
+</div>
 	<?php
 	if(isset($_POST['tip']))
 	{
@@ -82,7 +80,7 @@ if(mysqli_num_rows($result) >= 0)
 		header("Location: detaljiKorisnika.php?kid=$idUser");
 
 	}
- $userEdit = "SELECT korisnik.korisnicko_ime,korisnik.ime,korisnik.prezime,korisnik.email
+ $userEdit = "SELECT korisnik.korisnicko_ime,korisnik.ime,korisnik.prezime,korisnik.email,korisnik.lozinka,korisnik.slika
 				FROM korisnik 
 				WHERE korisnik.korisnik_id ='$idUser'";
 $result=queryDB($connect,$userEdit);
@@ -92,6 +90,9 @@ while($row=mysqli_fetch_array($result))
 	$ime=$row['ime'];
 	$prezime=$row['prezime'];
 	$email=$row['email'];
+	$lozinka=$row['lozinka'];
+	$slika=$row['slika'];
+
 }
 if(isset($_POST['submit1']))
 {
@@ -99,26 +100,46 @@ if(isset($_POST['submit1']))
 	$imeNovo=$_POST['ime'];
 	$prezimeNovo=$_POST['prezime'];
 	$emailNovo=$_POST['email'];
+	$slikaNovo=$_POST['email'];
+	$lozinkaNovo=$_POST['email'];
+
 
 	$newData = "UPDATE korisnik
-					SET korisnicko_ime = '$korImeNovo', ime='$imeNovo', prezime = '$prezimeNovo', email='$emailNovo'
+					SET korisnicko_ime = '$korImeNovo', ime='$imeNovo', prezime = '$prezimeNovo', email='$emailNovo',lozinka='$lozinkaNovo',slika='$slikaNovo'
 					WHERE korisnik.korisnik_id = '$idUser'";
 	$result=queryDB($connect,$newData);
 	header("location:detaljiKorisnika.php?kid=$idUser");
 }
-disconnectDB($connect);
 	 ?>
+<div class="container" id="loginForm">
 <h2> Izmjena korisnickih podataka </h2>
 <form action="" method="POST">
+	<div class="form-group">
 	<label> Korisnicko ime </label>
-	<input type="text" name="korisnickoIme" value="<?php echo $korisnickoIme; ?>"> <br>
+	<input type="text" name="korisnickoIme" value="<?php echo $korisnickoIme; ?>" class="form-control">
+</div>
+<div class="form-group">
+	<label> Lozinka </label>
+	<input type="text" name="email" value="<?php echo $lozinka; ?>" class="form-control"> 
+</div>
+<div class="form-group">
 	<label> Ime </label>
-	<input type="text" name="ime" value="<?php echo $ime; ?>">  <br>
+	<input type="text" name="ime" value="<?php echo $ime; ?>" class="form-control">
+</div>
+<div class="form-group">
 	<label> Prezime</label>
-	<input type="tex" name="prezime" value="<?php echo $prezime; ?>">  <br>
+	<input type="tex" name="prezime" value="<?php echo $prezime; ?>" class="form-control">
+</div>
+<div class="form-group">
 	<label> Email </label>
-	<input type="text" name="email" value="<?php echo $email; ?>"> 
-	<input type="submit" name="submit1" value="Ažuriraj">
+	<input type="text" name="email" value="<?php echo $email; ?>" class="form-control"> 
+</div>
 
-</body>
-</html>
+<div class="form-group">
+	<label> Slika </label>
+	<input type="text" name="email" value="<?php echo $slika; ?>" class="form-control"> 
+</div>
+	<button type="submit" name="submit1" class="btn btn-primary">Ažuriraj! </button>
+<?php 
+disconnectDB($connect);
+include("footer.php"); ?>

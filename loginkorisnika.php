@@ -16,24 +16,33 @@ if(isset($_POST['userName']))
 					FROM korisnik 
 					INNER JOIN tip_korisnika ON korisnik.tip_id = tip_korisnika.tip_id
 					WHERE korisnicko_ime='$userName' AND lozinka='$pass'";
+
 		
 		$result=queryDB($connect,$query);
+
 		if($result)
 		{
-			if(mysqli_num_rows($result)!=0)
+			if(mysqli_num_rows($result) > 0)
 			{
-				list($id,$type,$name,$surname,$naziv)=mysqli_fetch_array($result);
+				list($id,$type,$name,$surname,$naziv,$zaposlenik)=mysqli_fetch_array($result);
 				$_SESSION['activeUser']=$userName;
 				$_SESSION['activeUserName']=$name ." ".$surname;
 				$_SESSION['activeUserId']=$id;
 				$_SESSION['activeUserType']=$type;
 				$_SESSION['tipNaziv']=$naziv;
+				 header("Location: index.php");
+			}
+			else
+			{
+				 header("Location: index.php?error");
 			}
 		}
-		if($_SESSION['activeUserType']==2)
+
+
+		if($_SESSION['activeUserType'] == 2)
 		{
 			
-			$checkEmployee="SELECT zaposlenik.korisnik_id, korisnik.korisnik_id, korisnik.ime
+			$checkEmployee="SELECT zaposlenik_id
 					FROM zaposlenik
 					INNER JOIN korisnik ON zaposlenik.korisnik_id = korisnik.korisnik_id
 					WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
@@ -44,8 +53,8 @@ if(isset($_POST['userName']))
 			{
 			if(mysqli_num_rows($resultEmployee) !=0)
 				{
-					list($employed) = mysqli_fetch_array($resultEmployee);
-					$_SESSION['employed']=$employed;
+					list($zaposlenik_id) = mysqli_fetch_array($resultEmployee);
+					$_SESSION['zaposlenik_id']=$zaposlenik_id;
 				}
 			}
 
@@ -65,9 +74,41 @@ if(isset($_POST['userName']))
 								$_SESSION['preostaliOdgovori']=$preostaliOdgovori;
 							}
 					}
+
+					$check = "SELECT tvrtka_id 
+					FROM zaposlenik
+					WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
+					$result=queryDB($connect,$check);
+
+					if($result)
+					{
+						if(mysqli_num_rows($result) > 0)
+						{
+							list($tvrtka_id) = mysqli_fetch_array($result);
+							$_SESSION['tvrtka_id'] = $tvrtka_id;
+						}
+					}
 		}
-		else if($_SESSION['activeUserType']==1)
+		else if($_SESSION['activeUserType'] == 1)
 		{
+		
+
+			$checkEmployee="SELECT zaposlenik.zaposlenik_id
+					FROM zaposlenik
+					INNER JOIN korisnik ON zaposlenik.korisnik_id = korisnik.korisnik_id
+					WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
+
+			$resultEmployee=queryDb($connect,$checkEmployee);
+
+			if($resultEmployee)
+			{
+			if(mysqli_num_rows($resultEmployee) !=0)
+				{
+					list($employedMod) = mysqli_fetch_array($resultEmployee);
+					$_SESSION['employedMod']=$employedMod;
+				}
+			}
+			
 			$modEmployed="SELECT moderator_id
 							FROM tvrtka
 							WHERE tvrtka.moderator_id =".$_SESSION['activeUserId'];
@@ -115,24 +156,24 @@ if(isset($_POST['userName']))
 		}
 		disconnectDB($connect);
 	}
-	header("Location: index.php");
-}
+}		
 ?>
 
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Prijava</title>
-	<meta charset="utf-8"/>
-</head>
-<body>
+<div class="container" id="loginForm">
+<form action="loginkorisnika.php" method="POST">
+  <div class="form-group">
+    <label for="korisnickoIme">Korisničko ime</label>
+    <input type="text" class="form-control" id="userName" name="userName"value="" required="required">
+  </div>
+  <div class="form-group">
+    <label for="password">Lozinka</label>
+    <input type="password" class="form-control" id="pass" name="pass" value="" required="required">
+  </div>
+  <button type="submit" name="submit" class="btn btn-primary">Prijava</button>
+</form>
+</div>
 
-	<form action="loginkorisnika.php" method="POST">
-		<div class="form_settings">
-            <p><span>Korisničko ime :</span><input class="contact" type="text" name="userName" id="userName" value="" /></p>
-            <p><span>Šifra :</span><input class="contact" type="password" name="pass" id="pass" value="" /></p>
-<p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="submit" value="submit" /></p>
-
-</body>
-</html>
+<?php 
+include("footer.php")
+?>

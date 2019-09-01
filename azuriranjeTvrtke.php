@@ -1,15 +1,7 @@
 <?php 
 include("baza.php");
 include("header.php");
-?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
 
-<?php 
 $id=$_GET['id'];
 
 $connect=connectDB();
@@ -21,38 +13,37 @@ $detaljiTvrtke="SELECT korisnik.korisnicko_ime,naziv,opis,broj_zaposlenika,tvrtk
 $result=queryDB($connect,$detaljiTvrtke);
 
 if(mysqli_num_rows($result) >= 0)
-		{
+		{ ?>
+			<div class="container">
+			<h2 class="h2"> Popis tvrtki</h2>
+			<table class="table table-bordered">
+			<thead class="thead-dark">
+			<tr>
+			<th>Moderator </th>
+			<th>Naziv </th>
+			<th>Opis </th>
+			<th>Broj zaposlenih </th>
+			</tr>
+			</thead>
+			<tbody>
 
-			echo "<h2> Popis tvrtki</h2>";
-			echo "<table border ='1'>";
-			echo "<thead>";
-			echo "<tr>";
-			echo "<th>Moderator </th>";
-			echo "<th>Naziv </th>";
-			echo "<th>Opis </th>";
-			echo "<th>Broj zaposlenih </th>";
-			echo "</tr>";
-			echo "</thead>";
-			echo "<tbody>";
+<?php 	  while(list($korisnicko_ime,$naziv,$opis,$broj,$tvrtka_id)=mysqli_fetch_row($result))
+				{ ?>
+					<tr>
+					<td> <?php echo"$korisnicko_ime"; ?> </td>
+					<td> <?php echo"$naziv"; ?> </td>
+					<td> <?php echo"$opis"; ?> </td>
+					<td> <?php echo"$broj"; ?> </td>
+					<td> <a href= <?php echo"azuriraj.php?id=$id"; ?> > Izmjeni </a> </td>
+					</tr>
 
-				while(list($korisnicko_ime,$naziv,$opis,$broj,$tvrtka_id)=mysqli_fetch_row($result))
-				{
-					echo "<tr>";
-					echo "<td>".$korisnicko_ime."</td>";
-					echo "<td>".$naziv."</td>";
-					echo "<td>".$opis."</td>";
-					echo "<td>".$broj."</td>";
-					echo "<td> <a href=azuriraj.php?id=$id> Izmjeni </a> </td>";
-					echo "</tr>";
-
-				}
-				echo "</tbody>";
-				echo "</table>";
-		}
+		<?php	} ?>
+				</tbody>
+				</table>
+			</div>
+<?php } 
 
 
-
+disconnectDB($connect);
+include("footer.php");
  ?>
-
-</body>
-</html>

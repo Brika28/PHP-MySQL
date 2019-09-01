@@ -1,17 +1,6 @@
 <?php  
 include ("baza.php");
 include ("header.php");
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
-
-
-<?php 
 
 
 $uid=$_GET['uid'];
@@ -66,9 +55,8 @@ if($_SESSION['BrojZaposelnika'] < $_SESSION['broj_zaposlenika'] )
 		echo( " <button onclick=\"location.href='mojaTvrtka.php'\">Nazad</button>") ;
 	}
 disconnectDB($connect);
+include("footer.php");
  ?>
 
-</body>
-</html>
 
 

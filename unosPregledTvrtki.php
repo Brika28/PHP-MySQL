@@ -1,56 +1,79 @@
 <?php 
 include("baza.php");
 include("header.php");
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
-
-<div>
-<?php 
+ob_start();
 
 	$connect=connectDB();
+
+	$showFirm="SELECT tvrtka_id,naziv
+				FROM tvrtka";
+$result=queryDB($connect,$showFirm);
+
+if(mysqli_num_rows($result) >= 0)
+		{ ?>
+
+			<table class="table table-bordered">
+			<thead class="thead-dark">
+			<tr>
+			<th scope="col">Popis tvrtki</th>
+			</tr>
+			</thead>
+			<tbody>
+
+	<?php	while(list($tvrtka_id,$naziv)=mysqli_fetch_row($result))
+				{ ?>
+					<tr>
+					<td><a href= <?php echo "azuriranjeTvrtke.php?id=$tvrtka_id" ?> > <?php echo"$naziv"; ?></a></td>
+					</tr>
+	<?php		} ?>
+				</tbody>
+				</table>
+	<?php } 
+
 
 	$modUsers="SELECT korisnik_id,ime,prezime
 				FROM korisnik
                 LEFT OUTER JOIN tvrtka
         		ON tvrtka.moderator_id=korisnik.korisnik_id 
-				WHERE korisnik.tip_id = 1 AND tvrtka.moderator_id IS null ";
-	$result=queryDB($connect,$modUsers);
+				WHERE korisnik.tip_id = 1 AND tvrtka.moderator_id IS null";
+	$resultUser=queryDB($connect,$modUsers);
 
 ?>
-
-		<h2> Unesi novu tvrtku </h2>
+	<div class="container" id="loginForm">
+		<h2 class="h2"> Unos nove tvrtke </h2>
 		<form action=" " method="POST" name="unos">
-			<label> Izaberite moderatora: </label> <br>
+			<label> Izaberite moderatora: </label> 
 			<?php 
-			if($result)
-			{
-				while($row = mysqli_fetch_array($result))
-				{
+			if($resultUser === 0) 
+			{ ?>
+				<h6> Nema slobodnih moderatora za kreiranje tvrtke! </h6>
+	<?php	}
+			else
+			{ 
+			    while($row = mysqli_fetch_array($resultUser))
+				{ 
 					$razmak =" ";
 					$modID=$row['korisnik_id'];
 					$ime=$row['ime'];
 					$prezime=$row['prezime'];
-					echo '<input type="radio" name="slobodniMod" value="'.$modID.'" />'.$ime .$razmak .$prezime; 
-				}
-			}
-			elseif($result == 0)
-			{
-				echo "Nema slobodnih moderatora za kreiranje tvrtke!";
-			}
-			?> <br>
+					?>
+					<input type="radio" name="slobodniMod" required="required" value = <?php echo "'.$modID.'"; ?>/> <?php echo "$ime $razmak $prezime"; ?>
+		<?php	}
+		} ?> 
+		<div class="form-group">
 			<label> Naziv tvrtke: </label>
-			<input type="text" name="nazivTvrtke" required="required"> <br>
+			<input type="text" name="nazivTvrtke" required="required" class="form-control">
+		</div>
+		<div class="form-group">
 			<label> Opis tvrtke: </label>
-			<input type="text" name="opis" required="required"> <br>
+			<input type="text" name="opis" required="required" class="form-control">
+		</div>
+		<div class="form-group">
 			<label> Broj zaposlenika: </label>
-			<input type="text" name="brojZaposlenika" required="required"> <br>
-			<input type="submit" name="unesi" value="Unesi tvrtku">
+			<input type="text" name="brojZaposlenika" required="required" class="form-control">
+		</div>
+			<button type="submit" name="unesi" class="btn btn-primary"> Unesi tvrtku! </button>
 		</form>
 	</div>
 <?php  
@@ -70,77 +93,7 @@ if(isset($_POST['unesi']))
 		}
 
 
-$showFirm="SELECT tvrtka_id,naziv
-				FROM tvrtka";
-$result=queryDB($connect,$showFirm);
 
-if(mysqli_num_rows($result) >= 0)
-		{
-
-			echo "<h2> Popis tvrtki</h2>";
-			echo "<table border ='1'>";
-			echo "<thead>";
-			echo "<tr>";
-			echo "<th>Naziv </th>";
-			echo "</tr>";
-			echo "</thead>";
-			echo "<tbody>";
-
-				while(list($tvrtka_id,$naziv)=mysqli_fetch_row($result))
-				{
-					echo "<tr>";
-					echo "<td><a href='azuriranjeTvrtke.php?id=$tvrtka_id'>".$naziv."</a></td>";
-					echo "</tr>";
-				}
-				echo "</tbody>";
-				echo "</table>";
-		}
-
-
-$answerRequest = "SELECT tvrtka.naziv,tvrtka.tvrtka_id,tvrtka.zahtjev
-					FROM tvrtka 
-					WHERE tvrtka.zahtjev = 1";
-$resultA=queryDB($connect,$answerRequest);
-
-	if(mysqli_num_rows($resultA) > 0)
-	{
-		echo "<h2> Popis tvrtki sa zahtjevom</h2>";
-		echo "<table border ='1'>";
-		echo "<thead>";
-		echo "<tr>";
-		echo "<th>Naziv </th>";
-		echo "</tr>";
-		echo "</thead>";
-		echo "<tbody>";
-
-			while(list($naziv,$tvrtka_id)=mysqli_fetch_row($resultA))
-				{
-					echo "<tr>";
-					echo "<td>".$naziv."</td>";
-					echo "<td>".$tvrtka_id."</td>";
-					echo "<td>"	?> 	<form action="" method="POST">
-										<input type="hidden" name="id" value="<?php echo "$tvrtka_id"; ?>">
-										<input type="submit" name="odobriZahtjev" value="Odobri zahtjev"> 
-										</form>
-								<?php "</td>";
-					echo "</tr>";
-				}
-		echo "</tbody>";
-		echo "</table>";
-	}
-	else
-	{
-		echo "<h2> Nema zahtijeva za povećanjem odgovora</h2>";	
-	}
-	if(isset($_POST['odobriZahtjev']))
-				{
-					$firmId = $_POST['id'];
-					$updateAnswers = "UPDATE tvrtka 
-									   SET zahtjev = '0', preostaliOdgovori=preostaliOdgovori + 10
-									   WHERE tvrtka.tvrtka_id='$firmId'";
-					$result=queryDB($connect,$updateAnswers);
-					header("location:unosPregledTvrtki.php");
-				}
 $questionAnswerNumber = "SELECT 
     				tvrtka.naziv,
     				COUNT(DISTINCT pitanje.pitanje_id) as brojPitanja,
@@ -153,29 +106,32 @@ $questionAnswerNumber = "SELECT
 $questionAnswerResult = queryDB($connect,$questionAnswerNumber);
 
 if(mysqli_num_rows($questionAnswerResult) >= 0)
-{
-	echo "<h2> Statistika broja pitanja i odgovora </h2>";
-	echo "<table border = '1'>";
-	echo "<thead>";
-	echo "<tr>";
-	echo "<th> Tvrtka </th>";
-	echo "<th> Broj pitanja </th>";
-	echo "<th> Broj odgovora </th>";
-	echo "</thead>";
-	echo "<tbody>";
+{ ?>
+	<div class="container">
+		<h2 class="h2"> Statistika broja odgovora </h2>
+	<table class="table table-bordered">
+	<thead class="thead-dark">
+	<tr>
+	<th> Tvrtka </th>
+	<th> Broj pitanja </th>
+	<th> Broj odgovora </th>
+	</tr>
+	</thead>
+	<tbody>
 
-		while(list($naziv,$brojPitanja,$brojOdgovora)= mysqli_fetch_row($questionAnswerResult))
-		{
-			echo "<tr>";
-			echo "<td>".$naziv."</td>";
-			echo "<td>".$brojPitanja."</td>";
-			echo "<td>".$brojOdgovora."</td>";
-			echo "</tr>";
+<?php	while(list($naziv,$brojPitanja,$brojOdgovora)= mysqli_fetch_row($questionAnswerResult))
+		{ ?>
+			<tr>
+			<td> <?php echo "$naziv"; ?> </td>
+			<td> <?php echo "$brojPitanja"; ?> </td>
+			<td> <?php echo "$brojOdgovora"; ?> </td>
+			</tr>
 
-		}
-		echo "</tbody>";
-		echo "</table>";
-}
+<?php 	} ?>
+		</tbody>
+		</table>
+		</div>
+<?php } 
 
 $employeeStats ="SELECT naziv, ime, prezime, COUNT(*) AS broj_odgovora FROM tvrtka, korisnik, zaposlenik, odgovor
 				WHERE korisnik.korisnik_id = zaposlenik.korisnik_id AND zaposlenik.tvrtka_id = tvrtka.tvrtka_id
@@ -184,34 +140,85 @@ $employeeStats ="SELECT naziv, ime, prezime, COUNT(*) AS broj_odgovora FROM tvrt
 $employeeStatsResult = queryDB($connect,$employeeStats);
 
 if(mysqli_num_rows($employeeStatsResult) >= 0)
-{
-	echo "<h2> Statistika broja odgovora po zaposleniku </h2>";
-	echo "<table border = '1'>";
-	echo "<thead>";
-	echo "<tr>";
-	echo "<th> Tvrtka </th>";
-	echo "<th> Ime </th>";
-	echo "<th> Prezime </th>";
-	echo "<th> Broj odgoora </th>";
-	echo "</thead>";
-	echo "<tbody>";
+{ ?>
+	<div class="container">
+		<h2 class="h2"> Statistika zaposlenika </h2>
+	<table class="table table-bordered">
+	<thead class="thead-dark">
+	<tr>
+	<th> Tvrtka </th>
+	<th> Ime </th>
+	<th> Prezime </th>
+	<th> Broj odgovora </th>
+	</thead>
+	<tbody>
 
-	while(list($naziv,$ime,$prezime,$broj_odgovora)= mysqli_fetch_row($employeeStatsResult))
-		{
-			echo "<tr>";
-			echo "<td>".$naziv."</td>";
-			echo "<td>".$ime."</td>";
-			echo "<td>".$prezime."</td>";
-			echo "<td>".$broj_odgovora."</td>";
-			echo "</tr>";
+<?php	while(list($naziv,$ime,$prezime,$broj_odgovora)= mysqli_fetch_row($employeeStatsResult))
+		{ ?>
+			<tr>
+			<td> <?php echo"$naziv"; ?> </td>
+			<td> <?php echo"$ime"; ?> </td>
+			<td> <?php echo"$prezime"; ?> </td>
+			<td> <?php echo"$broj_odgovora"; ?> </td>
+			</tr>
 
-		}
-		echo "</tbody>";
-		echo "</table>";
-}
+<?php	} ?>
+		</tbody>
+		</table>
+	</div>
+<?php } 
+$answerRequest = "SELECT tvrtka.naziv,tvrtka.tvrtka_id,tvrtka.zahtjev
+					FROM tvrtka 
+					WHERE tvrtka.zahtjev = 1";
+$resultA=queryDB($connect,$answerRequest);
 
+	if(mysqli_num_rows($resultA) > 0)
+	{ ?>
+		<div class="container">
+		<h2 class="h2"> Popis tvrtki sa zahtjevom</h2>
+		<table class="table table-bordered">
+		<thead class="thead-dark">
+		<tr>
+		<th>Naziv </th>
+		<th>Id tvrtke </th>
+		<th>Odobrenje zahtjeva </th>
+		</tr>
+		</thead>
+		<tbody>
+
+<?php	while(list($naziv,$tvrtka_id)=mysqli_fetch_row($resultA))
+				{ ?>
+					<tr>
+					<td> <?php echo "$naziv"; ?> </td>
+					<td> <?php echo "$tvrtka_id"; ?> </td>
+					<td>	
+					<form action="" method="POST">
+										<input type="hidden" name="id" value="<?php echo "$tvrtka_id"; ?>">
+										<input type="submit" name="odobriZahtjev" value="Odobri zahtjev"> 
+										</form>
+								</td>
+					</tr>
+			<?php 	} ?>
+		</tbody>
+		</table>
+	</div>
+<?php 	}
+	else
+		{ ?>
+		<h2 class="h2"> Nema zahtijeva za povećanjem odgovora</h2>	
+<?php	}
+	if(isset($_POST['odobriZahtjev']))
+				{
+					$firmId = $_POST['id'];
+					$updateAnswers = "UPDATE tvrtka 
+									   SET zahtjev = '0', preostaliOdgovori=preostaliOdgovori + 10
+									   WHERE tvrtka.tvrtka_id='$firmId'";
+					$result=queryDB($connect,$updateAnswers);
+					header("location:unosPregledTvrtki.php");
+
+					ob_end_flush();
+				}
 
 disconnectDB($connect);
+include("footer.php");
 ?>
-</body>
-</html>

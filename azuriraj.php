@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
-
 <?php 
 include ("baza.php");
 include ("header.php");
@@ -59,21 +52,24 @@ if(isset($_POST['editForm']))
 	}
 }
 ?>
-<br>
+<div class="container" id="loginForm">
 <form action="" method="POST">
 <input type="hidden" name="id" value="<?php echo $id; ?>">
+<div class="form-group">
 <label> Naziv: </label>
-<input type="text" name="naziv" value="<?php echo $naziv; ?>"> <br>
+<input type="text" name="naziv" class="form-control" value="<?php echo $naziv; ?>">
+</div>
+<div class="form-group">
 <label> Opis: </label>
-<input type="text" name="opis"  value="<?php echo $opis; ?>"> <br>
+<input type="text" name="opis" class="form-control"  value="<?php echo $opis; ?>">
+</div>
+<div class="form-group">
 <label> Broj zaposlenih: </label>
-<input type="text" name="broj_zaposlenika" value="<?php echo $broj_zaposlenika; ?>">
-<input type="submit" name="editForm" value="Izmjeni!">
+<input type="text" name="broj_zaposlenika" class="form-control" value="<?php echo $broj_zaposlenika; ?>">
+</div>
+<input type="submit" name="editForm" value="Izmjeni!" class="btn btn-primary">
 </form>
-
-
-
-
-</body>
-</html>
-
+</div>
+<?php 
+disconnectDB($connect);
+include("footer.php"); ?>

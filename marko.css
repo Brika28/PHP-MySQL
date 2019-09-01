@@ -1,0 +1,55 @@
+html{
+	height: 100%;
+}
+body{
+	background-color: #f2f2f2;
+	font: normal .90em 'trebuchet ms', arial,sans-serif; 
+}
+
+.jumbotron {
+	margin-bottom: 0;
+}
+#loginForm{
+	max-width: 400px;
+	padding-top: 90px;
+	align-content: center;
+	padding-bottom: 20px;
+}
+#indexText{
+	align-content: left;
+}
+#footer{
+	margin: auto;
+	text-align: center;
+	font: normal 'trebuchet ms', arial,sans-serif;
+}
+#tvrtkeListe{
+	max-width: 400px;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	align-content: center;
+}
+.h2{
+	text-align: center;
+	font: normal 'trebuchet ms', arial,sans-serif; 
+}
+#questionForm{
+	max-width: 400px;
+	padding-top: 90px;
+	align-content: center;
+	padding-top: 0;
+	padding-bottom: 20px;
+}
+th{
+	text-align: center;
+}
+#buttonZahtjev{
+	text-align: center;
+}
+.alert{
+	text-align: center;
+}
+#mojaSlika{
+	width: 200px; 
+	height: 150px;
+}
