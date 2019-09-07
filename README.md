@@ -1,2 +1,2 @@
 # PHP-MySQL
-Simple customer support web app. !!Add DB create scripts!!
+Simple customer support web app with DB creation scripts.
