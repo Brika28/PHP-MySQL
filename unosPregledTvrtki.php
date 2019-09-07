@@ -45,7 +45,7 @@ if(mysqli_num_rows($result) >= 0)
 		<form action=" " method="POST" name="unos">
 			<label> Izaberite moderatora: </label> 
 			<?php 
-			if($resultUser === 0) 
+			if(mysqli_num_rows($resultUser) <= 0) 
 			{ ?>
 				<h6> Nema slobodnih moderatora za kreiranje tvrtke! </h6>
 	<?php	}

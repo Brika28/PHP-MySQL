@@ -89,25 +89,23 @@ if(isset($_POST['userName']))
 						}
 					}
 		}
-		else if($_SESSION['activeUserType'] == 1)
+		
+		if(isset($_SESSION['activeUserType']) && $_SESSION['activeUserType'] == 1)
 		{
 		
 
-			$checkEmployee="SELECT zaposlenik.zaposlenik_id
+			$checkEmployee="SELECT zaposlenik_id
 					FROM zaposlenik
 					INNER JOIN korisnik ON zaposlenik.korisnik_id = korisnik.korisnik_id
-					WHERE zaposlenik.korisnik_id = ".$_SESSION['activeUserId'];
+					WHERE zaposlenik.korisnik_id =".$_SESSION['activeUserId'];
 
 			$resultEmployee=queryDb($connect,$checkEmployee);
 
-			if($resultEmployee)
-			{
-			if(mysqli_num_rows($resultEmployee) !=0)
+			if(mysqli_num_rows($resultEmployee) != 0)
 				{
 					list($employedMod) = mysqli_fetch_array($resultEmployee);
 					$_SESSION['employedMod']=$employedMod;
 				}
-			}
 			
 			$modEmployed="SELECT moderator_id
 							FROM tvrtka

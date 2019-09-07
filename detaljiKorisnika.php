@@ -100,8 +100,8 @@ if(isset($_POST['submit1']))
 	$imeNovo=$_POST['ime'];
 	$prezimeNovo=$_POST['prezime'];
 	$emailNovo=$_POST['email'];
-	$slikaNovo=$_POST['email'];
-	$lozinkaNovo=$_POST['email'];
+	$slikaNovo=$_POST['slika'];
+	$lozinkaNovo=$_POST['lozinka'];
 
 
 	$newData = "UPDATE korisnik
@@ -120,7 +120,7 @@ if(isset($_POST['submit1']))
 </div>
 <div class="form-group">
 	<label> Lozinka </label>
-	<input type="text" name="email" value="<?php echo $lozinka; ?>" class="form-control"> 
+	<input type="text" name="lozinka" value="<?php echo $lozinka; ?>" class="form-control"> 
 </div>
 <div class="form-group">
 	<label> Ime </label>
@@ -137,7 +137,7 @@ if(isset($_POST['submit1']))
 
 <div class="form-group">
 	<label> Slika </label>
-	<input type="text" name="email" value="<?php echo $slika; ?>" class="form-control"> 
+	<input type="text" name="slika" value="<?php echo $slika; ?>" class="form-control"> 
 </div>
 	<button type="submit" name="submit1" class="btn btn-primary">Ažuriraj! </button>
 <?php 

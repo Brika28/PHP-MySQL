@@ -112,8 +112,6 @@ if(mysqli_num_rows($result) >= 0) { ?>
 		</form>
 	</div>
  <?php
- var_dump($_SESSION['zaposlenik_id']);
- var_dump($_SESSION['activeUserId']);
 disconnectDB($connect);
 include("footer.php") ?>
 

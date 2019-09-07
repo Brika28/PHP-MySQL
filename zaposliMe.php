@@ -50,9 +50,11 @@ if($_SESSION['BrojZaposelnika'] < $_SESSION['broj_zaposlenika'] )
 		header("location:mojaTvrtka.php");
 	}
 	else
-	{
-		echo "Nemate više mijesta za zaposlenje";
-		echo( " <button onclick=\"location.href='mojaTvrtka.php'\">Nazad</button>") ;
+	{ ?>
+		<div class="container" id="zaposlenjeBanner">
+		<h2> Nemate više mijesta za zaposlenje </h2>
+		<?php echo( "<button onclick=\"location.href='mojaTvrtka.php'\">Nazad</button>");
+	?>	</div> <?php 
 	}
 disconnectDB($connect);
 include("footer.php");

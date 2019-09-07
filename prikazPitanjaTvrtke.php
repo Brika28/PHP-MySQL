@@ -37,7 +37,7 @@ if(mysqli_num_rows($result) >= 0)
 			?>
 			<tr>
 			<td><?php echo $row["naslov"] ?></td>
-			<td><?php echo date_format( $vrijeme,"d.m.Y H:i:s"); ?></td>
+			<td><?php echo date_format( $vrijeme,"d-m-Y H:i:s"); ?></td>
 			<td><?php echo $row["tekst"] ?></td>
 			<td><img src="<?php echo $row['slika'];?>" height="100" width="100"> </td>
 			<td><?php if(empty($row['video']) || $row['video'] == null || $row['video'] == "")

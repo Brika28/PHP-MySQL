@@ -24,7 +24,7 @@ if(mysqli_num_rows($result) >= 0)
 			<thead class="thead-dark">
 				<tr>
 					<th> Naslov </th>
-					<th> Datum i vrijeme</th>
+					<th> Datum i vrijeme pitanja</th>
 					<th>Tekst</th>
 					<th>Slika</th>
 					<th>Video</th>
@@ -38,7 +38,7 @@ if(mysqli_num_rows($result) >= 0)
 			?>
 			<tr>
 			<td><?php echo $row["naslov"] ?></td>
-			<td><?php echo date_format( $vrijeme,"d.m.Y H:i:s"); ?></td>
+			<td><?php echo date_format( $vrijeme,"d-m-Y H:i:s"); ?></td>
 			<td><?php echo $row["tekst"] ?></td>
 			<td><img src="<?php echo $row['slika'];?>" height="100" width="100"> </td>
 			<td><?php if(empty($row['video']) || $row['video'] == null || $row['video'] == "")
@@ -77,6 +77,7 @@ if(mysqli_num_rows($result) >= 0)
 		</form>
 		<?php } ?>
 	</div>
-<?php disconnectDB($connect); 
-	include("footer.php");
+<?php 
+disconnectDB($connect); 
+include("footer.php");
 	?>

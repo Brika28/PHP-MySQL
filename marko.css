@@ -53,3 +53,10 @@ th{
 	width: 200px; 
 	height: 150px;
 }
+#zaposlenjeBanner
+{
+	text-align: center;
+	background-color: #f2f2f2;
+	font: normal .90em 'trebuchet ms', arial,sans-serif;
+	margin-bottom: 20px; 
+}

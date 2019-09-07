@@ -179,7 +179,7 @@ else if($_SESSION['activeUserType']==1)
 			list($zahtjev)=mysqli_fetch_array($resultStatus);
 			$_SESSION['zahtjev']=$zahtjev;
 		} ?>
-	<div class="container">
+	<div class="container" id="#">
 		<div class="table-responsive">
 			<table class="table table-bordered">
   				<thead class="thead-dark">
