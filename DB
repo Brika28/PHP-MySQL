@@ -1,0 +1,307 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema iwa_2018_zb_projekt
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema iwa_2018_zb_projekt
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `iwa_2018_zb_projekt` DEFAULT CHARACTER SET utf8 ;
+USE `iwa_2018_zb_projekt` ;
+
+-- -----------------------------------------------------
+-- Table `iwa_2018_zb_projekt`.`tip_korisnika`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `iwa_2018_zb_projekt`.`tip_korisnika` (
+  `tip_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `naziv` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`tip_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `iwa_2018_zb_projekt`.`korisnik`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `iwa_2018_zb_projekt`.`korisnik` (
+  `korisnik_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `tip_id` INT(10) NOT NULL,
+  `korisnicko_ime` VARCHAR(50) NOT NULL,
+  `lozinka` VARCHAR(50) NOT NULL,
+  `ime` VARCHAR(50) NULL,
+  `prezime` VARCHAR(50) NULL,
+  `email` VARCHAR(50) NULL,
+  `slika` TEXT NULL,
+  PRIMARY KEY (`korisnik_id`),
+  INDEX `fk_korisnik_tip_korisnika_idx` (`tip_id` ASC),
+  CONSTRAINT `fk_korisnik_tip_korisnika`
+    FOREIGN KEY (`tip_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`tip_korisnika` (`tip_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `iwa_2018_zb_projekt`.`tvrtka`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `iwa_2018_zb_projekt`.`tvrtka` (
+  `tvrtka_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `moderator_id` INT(10) NOT NULL,
+  `naziv` VARCHAR(50) NOT NULL,
+  `opis` TEXT NULL,
+  `broj_zaposlenika` INT(10) NOT NULL,
+  `preostaliOdgovori` INT(10) NOT NULL,
+  `zahtjev` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`tvrtka_id`, `moderator_id`),
+  INDEX `fk_kategorija_korisnik1_idx` (`moderator_id` ASC),
+  CONSTRAINT `fk_kategorija_korisnik1`
+    FOREIGN KEY (`moderator_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`korisnik` (`korisnik_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `iwa_2018_zb_projekt`.`pitanje`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `iwa_2018_zb_projekt`.`pitanje` (
+  `pitanje_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `tvrtka_id` INT(10) NOT NULL,
+  `naslov` VARCHAR(50) NOT NULL,
+  `datum_vrijeme_pitanja` DATETIME NOT NULL,
+  `tekst` TEXT NOT NULL,
+  `slika` TEXT NOT NULL,
+  `video` TEXT NULL,
+  PRIMARY KEY (`pitanje_id`),
+  INDEX `fk_pitanje_kategorija1_idx` (`tvrtka_id` ASC),
+  CONSTRAINT `fk_pitanje_kategorija1`
+    FOREIGN KEY (`tvrtka_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`tvrtka` (`tvrtka_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `iwa_2018_zb_projekt`.`zaposlenik`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `iwa_2018_zb_projekt`.`zaposlenik` (
+  `zaposlenik_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `korisnik_id` INT(10) NOT NULL,
+  `tvrtka_id` INT(10) NOT NULL,
+  INDEX `fk_tvrtka_has_korisnik_korisnik1_idx` (`korisnik_id` ASC),
+  INDEX `fk_tvrtka_has_korisnik_tvrtka1_idx` (`tvrtka_id` ASC),
+  PRIMARY KEY (`zaposlenik_id`, `tvrtka_id`, `korisnik_id`),
+  CONSTRAINT `fk_tvrtka_has_korisnik_tvrtka1`
+    FOREIGN KEY (`tvrtka_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`tvrtka` (`tvrtka_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tvrtka_has_korisnik_korisnik1`
+    FOREIGN KEY (`korisnik_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`korisnik` (`korisnik_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `iwa_2018_zb_projekt`.`odgovor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `iwa_2018_zb_projekt`.`odgovor` (
+  `odgovor_id` INT(10) NOT NULL AUTO_INCREMENT,
+  `pitanje_id` INT(10) NOT NULL,
+  `zaposlenik_id` INT(10) NOT NULL,
+  `tekst` TEXT NOT NULL,
+  `datum_vrijeme_odgovora` DATETIME NOT NULL,
+  PRIMARY KEY (`odgovor_id`, `zaposlenik_id`),
+  INDEX `fk_odgovor_pitanje1_idx` (`pitanje_id` ASC),
+  INDEX `fk_odgovor_dodijeljen1_idx` (`zaposlenik_id` ASC),
+  CONSTRAINT `fk_odgovor_pitanje1`
+    FOREIGN KEY (`pitanje_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`pitanje` (`pitanje_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_odgovor_dodijeljen1`
+    FOREIGN KEY (`zaposlenik_id`)
+    REFERENCES `iwa_2018_zb_projekt`.`zaposlenik` (`zaposlenik_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE USER 'iwa_2018'@'localhost' IDENTIFIED BY 'foi2018';
+
+GRANT SELECT, INSERT, TRIGGER, UPDATE, DELETE ON TABLE `iwa_2018_zb_projekt`.* TO 'iwa_2018'@'localhost';
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+USE `iwa_2018_zb_projekt` ;
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Dumping data for table `tip_korisnika`
+--
+
+INSERT INTO `tip_korisnika` (`tip_id`, `naziv`) VALUES
+(0, 'administrator'),
+(1, 'voditelj'),
+(2, 'korisnik');
+
+--
+-- Dumping data for table `korisnik`
+--
+
+INSERT INTO `korisnik` (`korisnik_id`, `tip_id`, `korisnicko_ime`, `lozinka`, `ime`, `prezime`, `email`, `slika`) VALUES
+(1, 0, 'admin', 'foi', 'Administrator', 'Admin', 'admin@foi.hr', 'korisnici/admin.jpg'),
+(2, 1, 'voditelj', '123456', 'voditelj', 'Vodi', 'voditelj@foi.hr', 'korisnici/admin.jpg'),
+(3, 2, 'pkos', '123456', 'Pero', 'Kos', 'pkos@fff.hr', 'korisnici/pkos.jpg'),
+(4, 2, 'vzec', '123456', 'Vladimir', 'Zec', 'vzec@fff.hr', 'korisnici/vzec.jpg'),
+(5, 2, 'qtarantino', '123456', 'Quentin', 'Tarantino', 'qtarantino@foi.hr', 'korisnici/qtarantino.jpg'),
+(6, 2, 'mbellucci', '123456', 'Monica', 'Bellucci', 'mbellucci@foi.hr', 'korisnici/mbellucci.jpg'),
+(7, 2, 'vmortensen', '123456', 'Viggo', 'Mortensen', 'vmortensen@foi.hr', 'korisnici/vmortensen.jpg'),
+(8, 2, 'jgarner', '123456', 'Jennifer', 'Garner', 'jgarner@foi.hr', 'korisnici/jgarner.jpg'),
+(9, 2, 'nportman', '123456', 'Natalie', 'Portman', 'nportman@foi.hr', 'korisnici/nportman.jpg'),
+(10, 2, 'dradcliffe', '123456', 'Daniel', 'Radcliffe', 'dradcliffe@foi.hr', 'korisnici/dradcliffe.jpg'),
+(11, 2, 'hberry', '123456', 'Halle', 'Berry', 'hberry@foi.hr', 'korisnici/hberry.jpg'),
+(12, 2, 'vdiesel', '123456', 'Vin', 'Diesel', 'vdiesel@foi.hr', 'korisnici/vdiesel.jpg'),
+(13, 2, 'ecuthbert', '123456', 'Elisha', 'Cuthbert', 'ecuthbert@foi.hr', 'korisnici/ecuthbert.jpg'),
+(14, 2, 'janiston', '123456', 'Jennifer', 'Aniston', 'janiston@foi.hr', 'korisnici/janiston.jpg'),
+(15, 2, 'ctheron', '123456', 'Charlize', 'Theron', 'ctheron@foi.hr', 'korisnici/ctheron.jpg'),
+(16, 2, 'nkidman', '123456', 'Nicole', 'Kidman', 'nkidman@foi.hr', 'korisnici/nkidman.jpg'),
+(17, 2, 'ewatson', '123456', 'Emma', 'Watson', 'ewatson@foi.hr', 'korisnici/ewatson.jpg'),
+(18, 1, 'kdunst', '123456', 'Kirsten', 'Dunst', 'kdunst@foi.hr', 'korisnici/kdunst.jpg'),
+(19, 2, 'sjohansson', '123456', 'Scarlett', 'Johansson', 'sjohansson@foi.hr', 'korisnici/sjohansson.jpg'),
+(20, 2, 'philton', '123456', 'Paris', 'Hilton', 'philton@foi.hr', 'korisnici/philton.jpg'),
+(21, 2, 'kbeckinsale', '123456', 'Kate', 'Beckinsale', 'kbeckinsale@foi.hr', 'korisnici/kbeckinsale.jpg'),
+(22, 2, 'tcruise', '123456', 'Tom', 'Cruise', 'tcruise@foi.hr', 'korisnici/tcruise.jpg'),
+(23, 2, 'hduff', '123456', 'Hilary', 'Duff', 'hduff@foi.hr', 'korisnici/hduff.jpg'),
+(24, 2, 'ajolie', '123456', 'Angelina', 'Jolie', 'ajolie@foi.hr', 'korisnici/ajolie.jpg'),
+(25, 2, 'kknightley', '123456', 'Keira', 'Knightley', 'kknightley@foi.hr', 'korisnici/kknightley.jpg'),
+(26, 2, 'obloom', '123456', 'Orlando', 'Bloom', 'obloom@foi.hr', 'korisnici/obloom.jpg'),
+(27, 2, 'llohan', '123456', 'Lindsay', 'Lohan', 'llohan@foi.hr', 'korisnici/llohan.jpg'),
+(28, 2, 'jdepp', '123456', 'Johnny', 'Depp', 'jdepp@foi.hr', 'korisnici/jdepp.jpg'),
+(29, 2, 'kreeves', '123456', 'Keanu', 'Reeves', 'kreeves@foi.hr', 'korisnici/kreeves.jpg'),
+(30, 1, 'thanks', '123456', 'Tom', 'Hanks', 'thanks@foi.hr', 'korisnici/thanks.jpg'),
+(31, 2, 'elongoria', '123456', 'Eva', 'Longoria', 'elongoria@foi.hr', 'korisnici/elongoria.jpg'),
+(32, 2, 'rde', '123456', 'Robert', 'De', 'rde@foi.hr', 'korisnici/rde.jpg'),
+(33, 2, 'jheder', '123456', 'Jon', 'Heder', 'jheder@foi.hr', 'korisnici/jheder.jpg'),
+(34, 2, 'rmcadams', '123456', 'Rachel', 'McAdams', 'rmcadams@foi.hr', 'korisnici/rmcadams.jpg'),
+(35, 2, 'cbale', '123456', 'Christian', 'Bale', 'cbale@foi.hr', 'korisnici/cbale.jpg'),
+(36, 1, 'jalba', '123456', 'Jessica', 'Alba', 'jalba@foi.hr', 'korisnici/jalba.jpg'),
+(37, 2, 'bpitt', '123456', 'Brad', 'Pitt', 'bpitt@foi.hr', 'korisnici/bpitt.jpg'),
+(43, 2, 'apacino', '123456', 'Al', 'Pacino', 'apacino@foi.hr', 'korisnici/apacino.jpg'),
+(44, 2, 'wsmith', '123456', 'Will', 'Smith', 'wsmith@foi.hr', 'korisnici/wsmith.jpg'),
+(45, 2, 'ncage', '123456', 'Nicolas', 'Cage', 'ncage@foi.hr', 'korisnici/ncage.jpg'),
+(46, 2, 'vanne', '123456', 'Vanessa', 'Anne', 'vanne@foi.hr', 'korisnici/vanne.jpg'),
+(47, 2, 'kheigl', '123456', 'Katherine', 'Heigl', 'kheigl@foi.hr', 'korisnici/kheigl.jpg'),
+(48, 2, 'gbutler', '123456', 'Gerard', 'Butler', 'gbutler@foi.hr', 'korisnici/gbutler.jpg'),
+(49, 2, 'jbiel', '123456', 'Jessica', 'Biel', 'jbiel@foi.hr', 'korisnici/jbiel.jpg'),
+(50, 2, 'ldicaprio', '123456', 'Leonardo', 'DiCaprio', 'ldicaprio@foi.hr', 'korisnici/ldicaprio.jpg'),
+(51, 2, 'mdamon', '123456', 'Matt', 'Damon', 'mdamon@foi.hr', 'korisnici/mdamon.jpg'),
+(52, 2, 'hpanettiere', '123456', 'Hayden', 'Panettiere', 'hpanettiere@foi.hr', 'korisnici/hpanettiere.jpg'),
+(53, 2, 'rreynolds', '123456', 'Ryan', 'Reynolds', 'rreynolds@foi.hr', 'korisnici/rreynolds.jpg'),
+(54, 2, 'jstatham', '123456', 'Jason', 'Statham', 'jstatham@foi.hr', 'korisnici/jstatham.jpg'),
+(55, 2, 'enorton', '123456', 'Edward', 'Norton', 'enorton@foi.hr', 'korisnici/enorton.jpg'),
+(56, 2, 'mwahlberg', '123456', 'Mark', 'Wahlberg', 'mwahlberg@foi.hr', 'korisnici/mwahlberg.jpg'),
+(57, 2, 'jmcavoy', '123456', 'James', 'McAvoy', 'jmcavoy@foi.hr', 'korisnici/jmcavoy.jpg'),
+(58, 2, 'epage', '123456', 'Ellen', 'Page', 'epage@foi.hr', 'korisnici/epage.jpg'),
+(59, 2, 'mcyrus', '123456', 'Miley', 'Cyrus', 'mcyrus@foi.hr', 'korisnici/mcyrus.jpg'),
+(60, 2, 'kstewart', '123456', 'Kristen', 'Stewart', 'kstewart@foi.hr', 'korisnici/kstewart.jpg'),
+(61, 2, 'mfox', '123456', 'Megan', 'Fox', 'mfox@foi.hr', 'korisnici/mfox.jpg'),
+(62, 2, 'slabeouf', '123456', 'Shia', 'LaBeouf', 'slabeouf@foi.hr', 'korisnici/slabeouf.jpg'),
+(63, 2, 'ceastwood', '123456', 'Clint', 'Eastwood', 'ceastwood@foi.hr', 'korisnici/ceastwood.jpg'),
+(64, 2, 'srogen', '123456', 'Seth', 'Rogen', 'srogen@foi.hr', 'korisnici/srogen.jpg'),
+(65, 2, 'nreed', '123456', 'Nikki', 'Reed', 'nreed@foi.hr', 'korisnici/nreed.jpg'),
+(66, 2, 'agreene', '123456', 'Ashley', 'Greene', 'agreene@foi.hr', 'korisnici/agreene.jpg'),
+(67, 2, 'zdeschanel', '123456', 'Zooey', 'Deschanel', 'zdeschanel@foi.hr', 'korisnici/zdeschanel.jpg'),
+(68, 2, 'dfanning', '123456', 'Dakota', 'Fanning', 'dfanning@foi.hr', 'korisnici/dfanning.jpg'),
+(69, 2, 'tlautner', '123456', 'Taylor', 'Lautner', 'tlautner@foi.hr', 'korisnici/tlautner.jpg'),
+(70, 2, 'rpattinson', '123456', 'Robert', 'Pattinson', 'rpattinson@foi.hr', 'korisnici/rpattinson.jpg');
+
+--
+-- Dumping data for table `tvrtka`
+--
+
+INSERT INTO `tvrtka` (`tvrtka_id`, `moderator_id`, `naziv`, `opis`, `broj_zaposlenika`, `preostaliOdgovori`, `zahtjev`) VALUES
+(1, 2, 'Styria', 'Izrada dizajna Web stranica', 10, 0, 1),
+(2, 18, 'NTH', 'Izrada dinamičkih Web stranica', 10, 5, 0),
+(3, 30, 'Diverto', 'Informacijska sigurnost', 5, 19, 0),
+(4, 36, 'Poslovna inteligencija', 'Konzultantske usluge', 5, 10, 1);
+
+--
+-- Dumping data for table `pitanje`
+--
+
+INSERT INTO `pitanje` (`pitanje_id`, `tvrtka_id`, `naslov`, `datum_vrijeme_pitanja`, `tekst`, `slika`, `video`) VALUES
+(1, 1, 'Korištenje CSS Grida', '2018-11-01 10:15:00', 'Je li u izradi Web stranice za početnike preporučeno korištenje CSS Grida kod kreiranje rasporeda elemenata?', 'https://www.w3schools.com/css/grid_columns.png', 'https://www.html5rocks.com/en/tutorials/video/basics/devstories.mp4'),
+(2, 1, 'Dodatni fontovi', '2018-11-01 14:30:00', 'S obzirom da CSS ne nudi previše mogućnosti oko odabira fontova koje su alternative?', 'www.faqs.org/docs/htmltut/graphics/styles.fontfam.gif', ''),
+(3, 1, 'Prikazivanje videa', '2018-11-02 09:45:00', 'Koja HTML5 oznaka se koristi za prikazivanje videa, npr. YouTube?', 'https://www.queness.com/resources/images/14362.jpg', ''),
+(4, 1, 'HTML i CSS validacija', '2018-11-02 15:00:00', 'Ispravan naziv poveznice kojim se pozivaju stranice validatora?', 'https://www.oodlesstudio.com/wp-content/uploads/html-css.jpg', ''),
+(5, 2, 'Testiranja Web stranice ', '2018-11-03 08:00:00', 'Preglednik uvijek prikazuje raniju verziju Web stranice. U čemu je problem?', 'https://imgcdn.maketecheasier.com/2016/12/google-chrome-inspect-element-hero-a.jpg', ''),
+(6, 2, 'Ispis trenutnog datuma i vrijemena', '2018-11-03 16:00:00', 'Na koji način prikazati trenutni datum i vrijeme bez korištenja JavaScripta?', 'https://cdn.splessons.com/spf/c81e728d9d4c2f636f067f89cc14862c/wp-content/uploads/2016/03/javascript-date-01-splessons.png', ''),
+(7, 2, 'Razvojni alati za PHP', '2018-11-03 20:00:00', 'Alati slični Notepadu++?', 'https://pngimg.com/uploads/php/php_PNG50.png', ''),
+(8, 2, 'phpMyAdmin', '2018-11-04 11:00:00', 'Kako pristupiti sustavu za upravljanje bazom podataka u XAMPP-u?', 'https://i2.wp.com/journalxtra.com/wp-content/uploads/2013/10/phpMyAdmin-Logo.png?resize=360%2C254&ssl=1', ''),
+(9, 3, 'Autentikacija korisnika', '2018-11-04 17:00:00', 'Koji je preporučen format i veličina lozinke?', 'http://andrewlouis.co.uk/images/portal_login.png', ''),
+(10, 3, 'Web dizajn', '2018-11-05 10:00:00', 'Koja su obilježja dobrog Web dizajna?', 'https://responsivedevelopment.weebly.com/uploads/1/3/3/9/13398422/2513526_orig.jpg', '');
+
+--
+-- Dumping data for table `zaposlenik`
+--
+
+INSERT INTO `zaposlenik` (`zaposlenik_id`, `korisnik_id`, `tvrtka_id`) VALUES
+(1, 3, 1),
+(2, 4, 1),
+(3, 5, 1),
+(4, 6, 1),
+(5, 7, 1),
+(6, 8, 2),
+(7, 9, 2),
+(8, 10, 2),
+(9, 11, 2),
+(10, 12, 3),
+(11, 13, 3),
+(12, 14, 4),
+(13, 15, 4);
+
+--
+-- Dumping data for table `odgovor`
+--
+
+INSERT INTO `odgovor` (`odgovor_id`, `pitanje_id`, `zaposlenik_id`, `tekst` ,`datum_vrijeme_odgovora`) VALUES
+(1, 1, 1, 'Grid je više od godine dana u CSS specifikaciji i znatno olakšava slaganje rasporeda Web stranica i izradu responzivnog dizajna. Za korištenje potrebna su osnovna znanja o CSS-u. Podržan je u svim modernim web preglednicima (CanIUse). Više informacija: Mozilla Developer Documentation, W3Schools, CssTricks.', '2018-11-01 10:30:00'),
+(2, 2, 2, 'Mogu se primjerice koristiti fontovi dostupni od strane Google-a. Više informacija: Google Fonts servis.', '2018-11-01 15:15:00'),
+(3, 3, 3, 'Pokušajte s HTML5 oznakom iframe. Više informacija: W3Schools.', '2018-11-02 11:45:00'),
+(4, 3, 4, 'Preostale HTML5 oznaka za prikaz videa: video, embed, object. Više informacija: HTML5 Rocks.', '2018-11-02 12:00:00'),
+(5, 4, 5, 'HTML: https://jigsaw.w3.org/css-validator/validator?uri={uri}, CSS: http://validator.w3.org/check?uri={uri}. Umjesto {uri} trebate unijeti cijelu putanju do Vaše stranice (npr. https://google.com).', '2018-11-02 15:15:00'),
+(6, 4, 1, 'Nadovezujem se na prethodan odgovor. Ispravna vrijednost za {uri} kod CSS validatora je referer. Puna putanja onda izgleda ovako: https://jigsaw.w3.org/css-validator/validator?uri=referer', '2018-11-02 15:25:00'),
+(7, 4, 2, 'Odgovor možete pronaći na samim stranicama HTML i CSS validatora nakon što obavite validaciju Vaše stranice. Više informacija: HTML5 validator, CSS validator.', '2018-11-02 16:05:00'),
+(8, 5, 3, 'Pokušajte spremiti datoteku izvornog koda stranice (ukoliko ste ga mijenjali) ili obrišite međuspremnik (cache) Web preglednika.', '2018-11-03 09:00:00'),
+(9, 6, 1, 'Trenutni datum i vrijeme mogu se hardkodirati (datum i vrijeme zadnje promijene).', '2018-11-03 16:50:00'),
+(10, 6, 4, 'Upotrebom iframe-a na Web stranicu koja prikazuje trenutni datum i vrijeme.', '2018-11-03 17:15:00'),
+(11, 7, 6, 'NetBeans', '2018-11-03 20:05:00'),
+(12, 7, 7, 'Atom', '2018-11-03 20:10:00'),
+(13, 7, 8, 'Komodo Edit', '2018-11-03 20:15:00'),
+(14, 7, 9, 'Visual Studio', '2018-11-03 20:25:00'),
+(15, 8, 6, 'Pokrenite XAMPP i u upravljačkoj ploči odaberite pod modulom MySQL gumb Admin.', '2018-11-04 12:00:00'),
+(16, 9, 10, 'Format dobre lozinke uključuje najmanje 12 znakova (velika i mala slova, brojeve i posebne znakove).', '2018-11-04 18:00:00');
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+DROP USER IF EXISTS 'iwa_2018'@'localhost';
+DROP USER IF EXISTS iwa_2018;
+DROP SCHEMA IF EXISTS `iwa_2018_zb_projekt`;
